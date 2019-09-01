@@ -83,7 +83,10 @@ namespace JerryFish
             virtual double GetTaskValue(Task* task)
             {
                 // use normalzied value strategy
-                return task->GetNormalizedValue();
+                int bufferLife = task->GetBufferLife();
+                if (bufferLife <= 0) return 0;
+
+                return task->GetValue() / task->GetBufferLife();
             }
     };
 

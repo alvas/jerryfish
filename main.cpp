@@ -6,71 +6,73 @@
  */
 
 
-#include "json11/json11.hpp"
+#include "rapidjson/document.h"
+#include "rapidjson/writer.h"
+#include "rapidjson/stringbuffer.h"
 
 #include <iostream>
 #include <string>
 #include <fstream>
 
 
-using namespace json11;
+using namespace rapidjson;
 using namespace std;
 
 string fileName;
 
-void readTestDataJsonArray()
-{
-    string err;
-    std::ifstream data(fileName, std::ifstream::binary);
-    string file((std::istreambuf_iterator<char>(data)), std::istreambuf_iterator<char>());
-    auto jsons = Json::parse(file, err);
+//void readTestDataJsonArray()
+//{
+    //string err;
+    //std::ifstream data(fileName, std::ifstream::binary);
+    //string file((std::istreambuf_iterator<char>(data)), std::istreambuf_iterator<char>());
+    //auto jsons = Json::parse(file, err);
 
-    for (auto j: jsons.array_items())
-    {
-        cout << j.dump() << endl;
-    }
+    //for (auto j: jsons.array_items())
+    //{
+        //cout << j.dump() << endl;
+    //}
 
-    data.close();
-}
+    //data.close();
+//}
 
-void readTestData()
-{
-    string file;
-    std::ifstream data(fileName, std::ifstream::binary);
+//void readTestData()
+//{
+    //string file;
+    //std::ifstream data(fileName, std::ifstream::binary);
 
-    if (data.is_open())
-    {
-        string line;
+    //if (data.is_open())
+    //{
+        //string line;
 
-        while (getline(data, line))
-        {
-            file += line;
-        }
+        //while (getline(data, line))
+        //{
+            //file += line;
+        //}
 
-        data.close();
-    }
+        //data.close();
+    //}
 
     
-    auto bItr = file.find('{');
-    vector<Json> jsons;
-    string err;
+    //auto bItr = file.find('{');
+    //vector<Json> jsons;
+    //string err;
 
-    while (bItr != string::npos) {
-        auto eItr = file.find('}', bItr);
+    //while (bItr != string::npos) {
+        //auto eItr = file.find('}', bItr);
 
-        if (eItr != string::npos) {
-            auto str = file.substr(bItr, eItr - bItr + 1);
-            auto json = Json::parse(str, err);
-            jsons.push_back(json);
-        }
+        //if (eItr != string::npos) {
+            //auto str = file.substr(bItr, eItr - bItr + 1);
+            //auto json = Json::parse(str, err);
+            //jsons.push_back(json);
+        //}
 
-        bItr = file.find('{', eItr);
-    }
+        //bItr = file.find('{', eItr);
+    //}
 
-    for (auto j: jsons) {
-        cout << j.dump() << endl;
-    }
-}
+    //for (auto j: jsons) {
+        //cout << j.dump() << endl;
+    //}
+//}
 
 int main(int argc, char** argv)
 {
@@ -90,7 +92,19 @@ int main(int argc, char** argv)
     */
 
     //readTestData();
-    readTestDataJsonArray();
+    //readTestDataJsonArray();
 
+    const char* json = "{\"project\":\"rapidjson\",\"stars\":10}";
+    Document d;
+    d.Parse(json);
+    // 2. 利用 DOM 作出修改。
+    Value& s = d["stars"];
+    s.SetInt(s.GetInt() + 1);
+    // 3. 把 DOM 转换（stringify）成 JSON。
+    StringBuffer buffer;
+    Writer<StringBuffer> writer(buffer);
+    d.Accept(writer);
+    // Output {"project":"rapidjson","stars":11}
+    std::cout << buffer.GetString() << std::endl;
     return 0;
 }

@@ -35,12 +35,11 @@ Task::Task(json11::Json& o)
     {
         m_hasValue = false;
     }
-
 }
 
 double Task::GetValue()
 {
-    if (m_bufferLife <= 0) return 0;
+    if (!m_hasValue || m_bufferLife <= 0) return 0;
 
     double age = GetAge();
     double cacheAge = GetCacheAge();

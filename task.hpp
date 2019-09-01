@@ -46,7 +46,8 @@ namespace JerryFish
 
             double GetDropRate()
             {
-                return m_dropRate;
+                if (m_dropRate <= 0) return 0;
+                else return m_dropRate;
             }
 
             time_t GetCreatedTime()
@@ -103,20 +104,6 @@ namespace JerryFish
             bool IsValid()
             {
                 return !m_name.empty() && !m_category.empty() && HasValue();
-            }
-
-            /*
-             *  Return normalized value of an task.
-             */
-            double GetNormalizedValue()
-            {
-                if (!m_hasValue) return 0;
-
-                // Invalid task may have 0 bufferLife which has 0 value.
-                // return 0 and void divide by 0 calculation.
-                if (m_bufferLife <= 0) return 0;
-
-                return GetValue() / m_bufferLife;
             }
 
             void dump()
