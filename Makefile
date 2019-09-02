@@ -1,6 +1,6 @@
 CC = clang++
 mkfile_path :=$(shell pwd)
-INCLUDES=-I./rapidjson/include/
+INCLUDES=-I./rapidjson/include/ -I${INCLUDE}
 CFLAGS = -c -std=c++11 -Wall -fno-rtti -fno-exceptions
 DFLAGS = -std=c++11 -Wall -g -pthread
 UNIT_TEST1 = -L/usr/local/lib -lUnitTest++ test/main.cpp
@@ -64,7 +64,7 @@ server2_app: server2.o
 test1: server2.o client2.o
 	$(CC) $(DFLAGS) $(UNIT_TEST1) $(INCLUDES) test/test1.cpp server2.o client2.o json11.o process.o task.o task_type.o buffer.o cache_buffer.o -o test1; ./test1
 
-geom:
+geoms:
 	$(CC) $(DFLAGS) $(INCLUDES) test/test_geometry.cpp
 
 all: server2_app client2_app
