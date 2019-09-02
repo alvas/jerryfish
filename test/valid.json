@@ -1,0 +1,44 @@
+[
+  {
+    "name": "XYZ",
+    "category": "low",
+    "life": 20,
+    "decayRate": 0.63
+  },
+  {
+    "name": "XYZ",
+    "category": "low",
+    "life": 1,
+    "decayRate": 0.63
+  },
+  {
+    "name": "XYZ",
+    "category": "low",
+    "life": 20,
+    "decayRate": 0.0000001
+  },
+  {
+    "name": "XYZ",
+    "category": "low",
+    "life": 2147483647,
+    "decayRate": 0.63
+  },
+  {
+    "name": "XYZ",
+    "category": "low",
+    "life": 200,
+    "decayRate": 0.9999
+  },
+  {
+    "name": "XYZ",
+    "category": "MEDIUM",
+    "life": 20,
+    "decayRate": 0.63
+  },
+  {
+    "name": "XYZ",
+    "category": "low",
+    "life": 202.876,
+    "decayRate": 0.63
+  },
+]

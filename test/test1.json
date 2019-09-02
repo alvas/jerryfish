@@ -1,0 +1,74 @@
+[
+  {
+    "name": "ABC",
+    "category": "medium",
+    "life": 20,
+    "decayRate": 0.63
+  },
+  {
+    "name": "DEF",
+    "category": "medium",
+    "life": 375,
+    "decayRate": 0.4
+  },
+  {
+    "name": "XYZ",
+    "category": "low",
+    "life": 249,
+    "decayRate": 0.3
+  },
+  {
+    "name": "XYZ",
+    "category": "low",
+    "life": 263,
+    "decayRate": 0.37
+  },
+  {
+    "name": "XYZ",
+    "category": "medium",
+    "life": 300,
+    "decayRate": 0.61
+  },
+  {
+    "name": "XYZ",
+    "category": "low",
+    "life": 269,
+    "decayRate": 0.19
+  },
+  {
+    "name": "XYZ",
+    "category": "low",
+    "life": 251,
+    "decayRate": 0.22
+  },
+  {
+    "name": "XYZ",
+    "category": "low",
+    "life": 240,
+    "decayRate": 0.25
+  },
+  {
+    "name": "XYZ",
+    "category": "medium",
+    "life": 50,
+    "decayRate": 0.86
+  },
+  {
+    "name": "XYZ",
+    "category": "hot",
+    "life": 210,
+    "decayRate": 0.72
+  },
+  {
+    "name": "XYZ",
+    "category": "medium",
+    "life": 210,
+    "decayRate": 0.54
+  },
+  {
+    "name": "XYZ",
+    "category": "hot",
+    "life": 206,
+    "decayRate": 0.69
+  }
+]

@@ -1,0 +1,122 @@
+[
+  {
+    "": "",
+    "": "",
+    "": ,
+    "": 
+  },
+  {
+    "": "XYZ",
+    "category": "medium",
+    "life": 20,
+    "decayRate": 0.63
+  },
+  {
+    "name": "",
+    "category": "medium",
+    "life": 20,
+    "decayRate": 0.63
+  },
+  {
+    "name": "XYZ",
+    "": "medium",
+    "life": 20,
+    "decayRate": 0.63
+  },
+  {
+    "name": "XYZ",
+    "category": "",
+    "life": 20,
+    "decayRate": 0.63
+  },
+  {
+    "name": "XYZ",
+    "category": "medium",
+    "": 20,
+    "decayRate": 0.63
+  },
+  {
+    "name": "XYZ",
+    "category": "medium",
+    "life": ,
+    "decayRate": 0.63
+  },
+  {
+    "name": "XYZ",
+    "category": "medium",
+    "life": 20,
+    "": 0.63
+  },
+  {
+    "name": "XYZ",
+    "category": "medium",
+    "life": 20,
+    "decayRate":
+  },
+  {
+    "xyz": "XYZ",
+    "category": "medium",
+    "life": 20,
+    "decayRate": 0.63
+  },
+  {
+    "name": "XYZ",
+    "xyz": "medium",
+    "life": 20,
+    "decayRate": 0.63
+  },
+  {
+    "name": "XYZ",
+    "category": "medium",
+    "xyz": 20,
+    "decayRate": 0.63
+  },
+  {
+    "name": "XYZ",
+    "category": "medium",
+    "life": 20,
+    "xyz": 0.63
+  },
+  {
+    "name": "XYZ",
+    "category": "medium",
+    "life": 0,
+    "decayRate": 0.63
+  },
+  {
+    "name": "XYZ",
+    "category": "medium",
+    "life": -20,
+    "decayRate": 0.63
+  },
+  {
+    "name": "XYZ",
+    "category": "medium",
+    "life": 20,
+    "decayRate": 0
+  },
+  {
+    "name": "XYZ",
+    "category": "medium",
+    "life": 20,
+    "decayRate": -0.63
+  },
+  {
+    "NAME": "XYZ",
+    "TEMP": "medium",
+    "SHELFlIFE": 20,
+    "DECAYRATE": 0.63
+  },
+  {
+    "name": "XYZ",
+    "category": "xyz",
+    "life": 20,
+    "decayRate": 0.63
+  },
+  {
+    "name": "XYZ",
+    "category": "medium",
+    "life": -2147483648,
+    "decayRate": 0.63
+  }
+]
