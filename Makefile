@@ -1,6 +1,6 @@
 CC = clang++
 mkfile_path :=$(shell pwd)
-INCLUDES=-I/usr/include -I/usr/local/include -I./json11 -I/Users/qingyun/Downloads/git/rapidjson/include/ -I$(mkfile_path)
+INCLUDES=-I./rapidjson/include/ -I$(mkfile_path)
 CFLAGS = -c -std=c++11 -Wall -fno-rtti -fno-exceptions
 DFLAGS = -std=c++11 -Wall -g -pthread
 UNIT_TEST1 = -L/usr/local/lib -lUnitTest++ test/main.cpp
