@@ -7,79 +7,38 @@
 
 //#include "test_geometry.h"
 
+#include <cstdio>
 #include <iostream>
 #include <fstream>
 #include <random>
 #include <sstream>
 
 #include "rapidjson/document.h"
+#include "rapidjson/filereadstream.h"
 #include "rapidjson/writer.h"
 #include "rapidjson/stringbuffer.h"
+
+#include "geometry/RandomPointsGenerator.hpp"
+#include "geometry/MonotoneChain.hpp"
 
 using namespace rapidjson;
 
 
 int main(int argc, char** argv)
 {
-    
-    std::random_device rd;  //Will be used to obtain a seed for the random number engine
-    std::mt19937 generator(rd()); //Standard mersenne_twister_engine seeded with rd()
-    std::uniform_real_distribution<> distribution(-500.0, 500.0);
+    PointGenerator<Point> pg("points");
+    pg.SetNum(10000);
+    pg.CreatePointsJson();
+    std::vector<Point> &&points = pg.ReadPoints();
 
-    std::ofstream myfile;
-    myfile.open("points.txt");
+    auto hull = ConvexHull(points);
 
-    for (int i = 0; i < 100; ++i)
+    std::cout << "convex hull is: " << std::endl;
+
+    for (auto p: hull)
     {
-        for (int j = 0; j < 3; ++j)
-        {
-            myfile << distribution(generator);
-
-            if (j < 2) myfile << ',';
-        }
-
-        myfile << std::endl;
+        std::cout << p.x << "\t" << p.y << std::endl;
     }
-
-    myfile.close();
-
-    std::ifstream data("points.txt", std::ifstream::binary);
-    std::ofstream jsonFile;
-    jsonFile.open("points.json");
-    jsonFile << "{\"points\": [";
-
-    if (data.is_open())
-    {
-        std::string line;
-        bool isInitial = true;
-
-        while (getline(data, line))
-        {
-            if (isInitial)
-            {
-                isInitial = false;
-            }
-            else
-            {
-                jsonFile << ",";
-            }
-
-            jsonFile << "[" << line << "]";
-        }
-    }
-
-    jsonFile << "]}";
-    jsonFile.close();
-
-    std::ostringstream ss;
-    ss << jsonFile.rdbuf();
-    std::string json = ss.str();
-    Document d;
-    d.Parse(json.c_str());
-    Value& a = d["points"];
-
-    for (SizeType i = 0; i < a.Size(); i++)
-        std::cout << a[i].GetDouble() << std::endl;
 
     return 0;
 }
