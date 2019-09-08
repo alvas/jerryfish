@@ -13,13 +13,9 @@
 #include <random>
 #include <sstream>
 
-#include "rapidjson/document.h"
-#include "rapidjson/filereadstream.h"
-#include "rapidjson/writer.h"
-#include "rapidjson/stringbuffer.h"
-
 #include "geometry/RandomPointsGenerator.hpp"
 #include "geometry/MonotoneChain.hpp"
+#include "geometry/Welzl.hpp"
 
 using namespace rapidjson;
 
@@ -27,9 +23,9 @@ using namespace rapidjson;
 int main(int argc, char** argv)
 {
     PointGenerator<Point> pg("points");
-    pg.SetNum(10000);
-    pg.CreatePointsJson();
-    std::vector<Point> &&points = pg.ReadPoints();
+    pg.SetNum(3);
+    //pg.CreatePointsJson();
+    std::vector<Point> &&points = pg.CreatePoints1();
 
     auto hull = ConvexHull(points);
 
@@ -40,5 +36,8 @@ int main(int argc, char** argv)
         std::cout << p.x << "\t" << p.y << std::endl;
     }
 
+    auto c = Welzl(points);
+
+    std::cout << "circle center: " << c.c.x << ", " << c.c.y << "; radius: " << c.r << std::endl; 
     return 0;
 }

@@ -26,7 +26,7 @@ using namespace Geom;
 
 // Returns a list of points on the convex hull in counter-clockwise order.
 // Note: the last point in the returned list is the same as the first one.
-vector<Point> ConvexHull(vector<Point> P)
+vector<Point> ConvexHull(vector<Point>& P)
 {
     size_t n = P.size(), k = 0;
 
