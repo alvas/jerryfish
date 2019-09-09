@@ -15,7 +15,7 @@
 
 #include "geometry/RandomPointsGenerator.hpp"
 #include "geometry/MonotoneChain.hpp"
-#include "geometry/Welzl.hpp"
+#include "geometry/SmallestCircle.hpp"
 
 using namespace rapidjson;
 
@@ -24,8 +24,9 @@ int main(int argc, char** argv)
 {
     PointGenerator<Point> pg("points");
     pg.SetNum(3);
-    //pg.CreatePointsJson();
-    std::vector<Point> &&points = pg.CreatePoints1();
+    pg.CreatePointsJson();
+    //std::vector<Point> &&points = pg.CreatePoints1();
+    std::vector<Point> &&points = pg.ReadPoints();
 
     auto hull = ConvexHull(points);
 
