@@ -89,7 +89,7 @@ namespace Geom
             std::ifstream data(std::string(fileName + ".txt").c_str(), std::ifstream::binary);
             std::ofstream jsonFile;
             jsonFile.open(std::string(fileName + ".json").c_str());
-            jsonFile << "{\"points\": [";
+            jsonFile << "{\"points\":[";
 
             if (data.is_open())
             {

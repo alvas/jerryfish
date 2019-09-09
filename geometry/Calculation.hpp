@@ -11,6 +11,7 @@
 #define CALCULATION
 
 #include "Point.hpp"
+#include "Tolerance.hpp"
 
 double cross(const Point &O, const Point &A, const Point &B)
 {
@@ -37,7 +38,7 @@ Point center(const Point& A, const Point& B, const Point& C)
     double f = ((A.x * A.x - C.x * C.x) + (A.y * A.y - C.y * C.y)) / 2;
     double det = b * c - a * d;
 
-    if (fabs(det) < 1e5)
+    if (fabs(det) < TOL)
     {
         return Point();
     }

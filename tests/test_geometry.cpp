@@ -17,7 +17,7 @@
 #include "gtest/gtest.h"
 
 #include "geometry/RandomPointsGenerator.hpp"
-#include "geometry/MonotoneChain.hpp"
+#include "geometry/ConvexHull.hpp"
 #include "geometry/SmallestCircle.hpp"
 #include "geometry/Tolerance.hpp"
 #include "geometry/Geometry2Json.hpp"
@@ -49,4 +49,14 @@ TEST(GEOMTEST, GEOM2JSON)
 
     ASSERT_EQ(points.size(), 3);
     EXPECT_STREQ(Geom2Json::Parse(points[0]).c_str(), std::string("{[1,0]}").c_str());
+}
+
+TEST(GEOMTEST, CALC)
+{
+    PointGenerator<Point> pg;
+    std::vector<Point> &&points = pg.ReadPoints("tests/points1.json");
+
+    ASSERT_EQ(points.size(), 3);
+    auto c = center(points[0], points[1], points[2]);
+    EXPECT_STREQ(Geom2Json::Parse(c).c_str(), std::string("{[0,0]}").c_str());
 }

@@ -1,5 +1,5 @@
 /*
- * Geometry2Json.hxx
+ * Geometry2Json.hpp
  * Copyright (C) 2019 qingyun <qingyun.oracle@gmail.com>
  *
  * Distributed under terms of the MIT license.
@@ -25,15 +25,15 @@ namespace Geom
 
         static std::string Parse(const Point& p)
         {
-            std::string result("{[");
-            result += to_string(p.x) + "," + to_string(p.y);
-            result += "]}";
-            return result;
+            std::stringstream buffer;
+            buffer << std::setprecision(7) << "{[" << p.x << "," << p.y << "]}";
+            return buffer.str();
         }
 
         static std::string Parse(const std::vector<Point>& ps)
         {
-            std::string result("{\"points\":[");
+            std::stringstream buffer;
+            buffer << std::setprecision(7) << "{\"points\":["; 
             bool init = true;
 
             for (auto& p: ps)
@@ -43,14 +43,15 @@ namespace Geom
                 }
                 else
                 {
-                    result += ",";
+                    buffer << ",";
                 }
 
-                result += "[" + to_string(p.x) + "," + to_string(p.y) + "]";
+                buffer << "[" << p.x << "," << p.y << "]";
             }
 
-            result += "]}";
-            return result;
+            buffer << "]}";
+
+            return buffer.str();
         }
     };
 }
