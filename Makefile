@@ -1,9 +1,9 @@
 CC = clang++
 mkfile_path :=$(shell pwd)/src
-INCLUDES=-I.
+INCLUDES=-I. 
 CFLAGS = -c -std=c++11 -Wall -fno-rtti -fno-exceptions
 DFLAGS = -std=c++11 -Wall -g -pthread
-UNIT_TEST1 = -L/usr/local/lib test/main.cpp
+UNIT_TEST1 = -L/usr/local/lib -lgtest tests/main.cpp
 
 LIBS = 
 
@@ -65,6 +65,9 @@ test1: server2.o client2.o
 geoms:
 	$(CC) $(DFLAGS) $(INCLUDES) tests/test_geometry.cpp -o tests/geoms
 
+geoms_test:
+	$(CC) $(DFLAGS) $(INCLUDES) $(UNIT_TEST1) tests/test_geometry.cpp -o tests/geoms
+
 test: all test1 
 
 clean_test:
@@ -74,7 +77,7 @@ retest: clean_test test1
 	./test1
 
 clean:
-	rm *.o server2 client2 test1
+	rm *.o server2 client2 test1 tests/geoms
 
 kill:
 	pkill server2 client2 test1

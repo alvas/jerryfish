@@ -6,7 +6,7 @@
  */
 
 //#include "test1.h"
-#include "../unittest-cpp/UnitTest++/UnitTest++.h"
+#include "gtest/gtest.h"
 
 #include <unistd.h> 
 #include <iostream>
@@ -21,10 +21,10 @@
 
 using namespace JerryFish;
 
-static std::string file(".test/test1.json");
-static std::string file2("test/test2.json");
-static std::string file3("test/test3.json");
-static std::string task("test/task.json");
+static std::string file("tests/test1.json");
+static std::string file2("tests/test2.json");
+static std::string file3("tests/test3.json");
+static std::string task("tests/task.json");
 static std::string invalid_task("invalid_task.json");
 
 //static void init(JerryFish::Server& s)

@@ -1,0 +1,14 @@
+*.dSYM
+tests/*.dSYM
+geometry/*.dSYM
+*.gcda
+*.gch
+*.gcno
+*.o
+tests/*.o
+geometry/*.o
+*.swp
+tests/*.swp
+geometry/*.swp
+*~
+a.out

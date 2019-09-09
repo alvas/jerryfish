@@ -5,6 +5,11 @@
  * Distributed under terms of the MIT license.
  */
 
+#pragma once
+
+#ifndef RANDOM_POINT_GENERATOR
+#define RANDOM_POINT_GENERATOR
+
 #include <fstream>
 #include <random>
 #include <sstream>
@@ -22,6 +27,7 @@ namespace Geom
     class PointGenerator
     {
     public:
+        PointGenerator(){}
         PointGenerator(const std::string& file): m_file(file){}
 
         void CreatePoints()
@@ -135,6 +141,30 @@ namespace Geom
             return result;
         }
 
+        std::vector<T> ReadPoints(const std::string& file)
+        {
+            std::ifstream ss(file.c_str());
+            std::stringstream buffer;
+            buffer << ss.rdbuf();
+
+            Document d;
+            d.Parse(buffer.str().c_str());
+            Value& a = d["points"];
+            std::vector<T> result;
+
+            for (auto &v: a.GetArray())
+            {
+                std::vector<double> t;
+
+                for (auto &b: v.GetArray())
+                    t.push_back(b.GetDouble());
+
+                result.push_back(t);
+            }
+
+            return result;
+        }
+
         void SetNum(int num) { m_num = num; }
         void SetRange(double l, double r) { m_l = l; m_r = r; }
 
@@ -145,4 +175,4 @@ namespace Geom
     };
 }
 
-
+#endif
