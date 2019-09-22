@@ -13,3 +13,7 @@ geometry/*.swp
 tests/*.dSYM
 tests/*.o
 tests/*.swp
+build/
+CMakeFiles/*
+lib/
+log.txt

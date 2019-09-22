@@ -6,6 +6,11 @@ set(CMAKE_CXX_FLAGS "$ENV{CXXFLAGS} -O0 -fPIC -ggdb -std=c++11 -Wall -Wno-deprec
 
 include_directories(.)
 
+find_package(Boost REQUIRED)
+if(Boost_FOUND)
+    include_directories(${Boost_INCLUDE_DIRS})
+endif()
+
 set(LIB_SRC
     src/Logger.cc
     src/Utils.cc
@@ -19,6 +24,10 @@ set_target_properties(JerryFish PROPERTIES LINKER_LANGUAGE CXX OUTPUT_NAME "Jerr
 add_executable(test tests/test.cc)
 add_dependencies(test JerryFish)
 target_link_libraries(test JerryFish)
+
+add_executable(test_config tests/test_config.cc)
+add_dependencies(test_config JerryFish)
+target_link_libraries(test_config JerryFish)
 
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
