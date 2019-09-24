@@ -11,3 +11,39 @@ logs:
           - type: FileLogAppender
             file: /apps/logs/sylar/system.txt
           - type: StdoutLogAppender
+
+system:
+    port: 9900
+    value: 15
+    int_vec: [3, 4]
+
+
+class:
+    person:
+        name: jerryfish
+        age: 35
+        sex: true
+    map:
+        jerry1:
+            name: jerry1
+            age: 5
+            sex: true
+        jerry2:
+            name: jerry2
+            age: 18
+            sex: false
+    vec_map:
+        k1:
+            - name: m1
+              age: 22
+              sex: false
+            - name: m2
+              age: 78
+              sex: true
+        k2:
+            - name: m3
+              age: 42
+              sex: false
+            - name: m4
+              age: 76
+              sex: true

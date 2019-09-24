@@ -11,6 +11,8 @@ if(Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIRS})
 endif()
 
+link_directories(/usr/local/lib)
+
 set(LIB_SRC
     src/Logger.cc
     src/Utils.cc
@@ -25,9 +27,11 @@ add_executable(test tests/test.cc)
 add_dependencies(test JerryFish)
 target_link_libraries(test JerryFish)
 
+#find_library(YAMLCPP yaml-cpp)
+
 add_executable(test_config tests/test_config.cc)
 add_dependencies(test_config JerryFish)
-target_link_libraries(test_config JerryFish)
+target_link_libraries(test_config JerryFish yaml-cpp)
 
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)

@@ -8,6 +8,12 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#include <cxxabi.h>
+#include <typeinfo>
+#include <vector>
+#include <string>
+#include <fstream>
+
 namespace JerryFish {
 
     /**
@@ -217,11 +223,11 @@ namespace JerryFish {
     //bool YamlToJson(const YAML::Node& ynode, Json::Value& jnode);
     //bool JsonToYaml(const Json::Value& jnode, YAML::Node& ynode);
 
-    //template<class T>
-        //const char* TypeToName() {
-            //static const char* s_name = abi::__cxa_demangle(typeid(T).name(), nullptr, nullptr, nullptr);
-            //return s_name;
-        //}
+    template<class T>
+        const char* TypeToName() {
+            static const char* s_name = abi::__cxa_demangle(typeid(T).name(), nullptr, nullptr, nullptr);
+            return s_name;
+        }
 
     //std::string PBToJsonString(const google::protobuf::Message& message);
 
