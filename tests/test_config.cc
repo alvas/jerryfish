@@ -148,6 +148,12 @@ void test_class()
         }\
     }
 
+    g_person->addListener([](const Person& o, const Person& n){
+        
+        JERRYFISH_LOG_INFO(JERRYFISH_LOG_ROOT()) << "old_value = " << o.toString()
+        << "new_value = " << n.toString();
+    });
+
     XX_PM(g_person_map, "class.map before")
     JERRYFISH_LOG_INFO(JERRYFISH_LOG_ROOT()) << "before: " << g_person_vec_map->toString();
     YAML::Node root = YAML::LoadFile("conf/log.yml");

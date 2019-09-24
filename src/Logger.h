@@ -20,7 +20,9 @@
 #include <stdint.h>
 #include <string>
 #include <vector>
+#include <yaml-cpp/yaml.h>
 
+//#include "Config.h"
 #include "Singleton.h"
 
 /**
@@ -677,20 +679,20 @@ namespace JerryFish
         std::string toYamlString()
         {
             //MutexType::Lock lock(m_mutex);
-            //YAML::Node node;
-            //node["name"] = m_name;
-            //if(m_level != LogLevel::UNKNOW) {
-                //node["level"] = LogLevel::ToString(m_level);
-            //}
-            //if(m_formatter) {
-                //node["formatter"] = m_formatter->getPattern();
-            //}
+            YAML::Node node;
+            node["name"] = m_name;
+            if(m_level != LogLevel::UNKNOW) {
+                node["level"] = LogLevel::ToString(m_level);
+            }
+            if(m_formatter) {
+                node["formatter"] = m_formatter->getPattern();
+            }
 
-            //for(auto& i : m_appenders) {
-                //node["appenders"].push_back(YAML::Load(i->toYamlString()));
-            //}
+            for(auto& i : m_appenders) {
+                node["appenders"].push_back(YAML::Load(i->toYamlString()));
+            }
             std::stringstream ss;
-            //ss << node;
+            ss << node;
             return ss.str();
         }
 
@@ -885,16 +887,16 @@ namespace JerryFish
             std::string toYamlString() override
             {
                 //MutexType::Lock lock(m_mutex);
-                //YAML::Node node;
-                //node["type"] = "StdoutLogAppender";
-                //if(m_level != LogLevel::UNKNOW) {
-                    //node["level"] = LogLevel::ToString(m_level);
-                //}
-                //if(m_hasFormatter && m_formatter) {
-                    //node["formatter"] = m_formatter->getPattern();
-                //}
+                YAML::Node node;
+                node["type"] = "StdoutLogAppender";
+                if(m_level != LogLevel::UNKNOW) {
+                    node["level"] = LogLevel::ToString(m_level);
+                }
+                if(m_hasFormatter && m_formatter) {
+                    node["formatter"] = m_formatter->getPattern();
+                }
                 std::stringstream ss;
-                //ss << node;
+                ss << node;
                 return ss.str();
             }
     };
@@ -934,17 +936,17 @@ namespace JerryFish
             std::string toYamlString() override
             {
                 //MutexType::Lock lock(m_mutex);
-                //YAML::Node node;
-                //node["type"] = "FileLogAppender";
-                //node["file"] = m_filename;
-                //if(m_level != LogLevel::UNKNOW) {
-                    //node["level"] = LogLevel::ToString(m_level);
-                //}
-                //if(m_hasFormatter && m_formatter) {
-                    //node["formatter"] = m_formatter->getPattern();
-                //}
+                YAML::Node node;
+                node["type"] = "FileLogAppender";
+                node["file"] = m_filename;
+                if(m_level != LogLevel::UNKNOW) {
+                    node["level"] = LogLevel::ToString(m_level);
+                }
+                if(m_hasFormatter && m_formatter) {
+                    node["formatter"] = m_formatter->getPattern();
+                }
                 std::stringstream ss;
-                //ss << node;
+                ss << node;
                 return ss.str();
             }
 
@@ -1024,12 +1026,12 @@ namespace JerryFish
             std::string toYamlString()
             {
                 //MutexType::Lock lock(m_mutex);
-                //YAML::Node node;
-                //for(auto& i : m_loggers) {
-                    //node.push_back(YAML::Load(i.second->toYamlString()));
-                //}
+                YAML::Node node;
+                for(auto& i : m_loggers) {
+                    node.push_back(YAML::Load(i.second->toYamlString()));
+                }
                 std::stringstream ss;
-                //ss << node;
+                ss << node;
                 return ss.str();
             }
         private:

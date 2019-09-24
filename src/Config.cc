@@ -7,6 +7,8 @@
 
 #include "Config.h"
 
+static JerryFish::LogIniter __log_init;
+
 namespace JerryFish 
 {
     //static std::map<std::string, uint64_t> s_file2modifytime;

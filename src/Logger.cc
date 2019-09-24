@@ -7,9 +7,6 @@
 
 #include "Logger.h"
 
-
-//static JerryFish::LogIniter __log_init;
-
 void JerryFish::LogFormatter::init()
 {
     //str, format, type

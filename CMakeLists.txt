@@ -25,7 +25,7 @@ set_target_properties(JerryFish PROPERTIES LINKER_LANGUAGE CXX OUTPUT_NAME "Jerr
 
 add_executable(test tests/test.cc)
 add_dependencies(test JerryFish)
-target_link_libraries(test JerryFish)
+target_link_libraries(test JerryFish yaml-cpp)
 
 #find_library(YAMLCPP yaml-cpp)
 
