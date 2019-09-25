@@ -36,6 +36,15 @@ target_link_libraries(test_config JerryFish yaml-cpp)
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
+add_custom_target(ctags
+    COMMAND ctags -R
+    WORKING_DIRECTORY ..)
+
+add_custom_target(cscope
+    COMMAND find . -name \"*.[hcc]\" -print > cscope.files
+    COMMAND cscope -k -b -q -R
+    WORKING_DIRECTORY ..)
+
 ## Download and unpack googletest at configure time
 #configure_file(CMakeLists.txt.in googletest-download/CMakeLists.txt)
 #execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .

@@ -885,7 +885,7 @@ namespace JerryFish {
                         } 
                         else 
                         {
-                            if(!(i == *it)) 
+                            if (!(i == *it))
                             {
                                 //修改的logger
                                 logger = JERRYFISH_LOG_NAME(i.name);
@@ -905,6 +905,7 @@ namespace JerryFish {
                         }
 
                         logger->clearAppenders();
+
                         for(auto& a : i.appenders) 
                         {
                             JerryFish::LogAppender::ptr ap;

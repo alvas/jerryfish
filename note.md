@@ -2,7 +2,6 @@
 
 ## logger
 
-
 	LogAppender
      |-- m_formatter
      |-- m_level
@@ -55,4 +54,17 @@
       |-- m_description
       |-- m_name
       
+    LogDefine
+      |-- name
+      |-- level
+      |-- formatter
+      |-- appenders
+
+    LogAppenderDefine
+      |-- type
+      |-- level
+      |-- formatter
+      |-- file
+
+
 
