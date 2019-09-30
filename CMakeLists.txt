@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.0)
 project(JerryFish)
 
+set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_BUILD_TYPE RelWithDebInfo)
 set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_CXX_FLAGS "$ENV{CXXFLAGS} -O0 -fPIC -ggdb -std=c++11 -Wall -Wno-deprecated -Werror -Wno-unused-function -Wno-builtin-macro-redefined -Wno-deprecated-declarations")
 
@@ -18,6 +20,8 @@ set(LIB_SRC
     src/Utils.cc
     )
 
+add_compile_definitions(DBOOST_STACKTRACE_USE_ADDR2LINE)
+add_compile_definitions(_GNU_SOURCE)
 add_library(JerryFish SHARED ${LIB_SRC})
 add_library(JerryFish_static STATIC ${LIB_SRC})
 #set_target_properties(JerryFish_static PROPERTIES LINKER_LANGUAGE CXX OUTPUT_NAME "JerryFish")
@@ -31,7 +35,7 @@ target_link_libraries(test JerryFish yaml-cpp)
 
 add_executable(test_config tests/test_config.cc)
 add_dependencies(test_config JerryFish)
-target_link_libraries(test_config JerryFish yaml-cpp)
+target_link_libraries(test_config JerryFish yaml-cpp dl)
 
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
@@ -45,20 +49,6 @@ add_custom_target(cscope
     COMMAND cscope -k -b -q -R
     WORKING_DIRECTORY ..)
 
-## Download and unpack googletest at configure time
-#configure_file(CMakeLists.txt.in googletest-download/CMakeLists.txt)
-#execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
-  #RESULT_VARIABLE result
-  #WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/googletest-download )
-#if(result)
-  #message(FATAL_ERROR "CMake step for googletest failed: ${result}")
-#endif()
-#execute_process(COMMAND ${CMAKE_COMMAND} --build .
-  #RESULT_VARIABLE result
-  #WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/googletest-download )
-#if(result)
-  #message(FATAL_ERROR "Build step for googletest failed: ${result}")
-#endif()
 
 ## Prevent overriding the parent project's compiler/linker
 ## settings on Windows

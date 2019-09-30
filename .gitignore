@@ -20,3 +20,4 @@ tests/*.o
 tests/*.swp
 bin/test
 bin/test_config
+cscope*

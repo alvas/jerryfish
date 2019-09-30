@@ -7,7 +7,7 @@
 
 #include "Config.h"
 
-static JerryFish::LogIniter __log_init;
+//static JerryFish::LogIniter __log_init;
 
 namespace JerryFish 
 {

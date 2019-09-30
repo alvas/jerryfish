@@ -1,15 +1,19 @@
 /*
- * debugger.cpp
+ * Debugger.h
  * Copyright (C) 2019 qingyun <qingyun.oracle@gmail.com>
  *
  * Distributed under terms of the MIT license.
  */
 
 //#include "debugger.hpp"
-//
-#include <execinfo.h>
 
+#ifndef DEBUGGER_H
+#define DEBUGGER_H
+
+#include <execinfo.h>
 #include <iostream>
+
+#include <boost/stacktrace.hpp>
 
 void printTrace()
 {
@@ -23,3 +27,10 @@ void printTrace()
 
     free(strs);
 }
+
+void printTraceBoost()
+{
+    std::cout << boost::stacktrace::stacktrace();
+}
+
+#endif /* !DEBUGGER_H */

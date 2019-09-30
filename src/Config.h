@@ -24,6 +24,8 @@
 
 #include "Logger.h"
 #include "Utils.h"
+#include "Debugger.h"
+
 
 namespace JerryFish {
 
@@ -111,7 +113,7 @@ namespace JerryFish {
                 YAML::Node node = YAML::Load(v);
                 typename std::vector<T> vec;
                 std::stringstream ss;
-                for(size_t i = 0; i < node.size(); ++i) 
+                for (size_t i = 0; i < node.size(); ++i) 
                 {
                     ss.str("");
                     ss << node[i];
@@ -132,7 +134,7 @@ namespace JerryFish {
             std::string operator()(const std::vector<T>& v) 
             {
                 YAML::Node node(YAML::NodeType::Sequence);
-                for(auto& i : v) 
+                for (auto& i : v) 
                 {
                     node.push_back(YAML::Load(LexicalCast<T, std::string>()(i)));
                 }
@@ -154,7 +156,7 @@ namespace JerryFish {
                 YAML::Node node = YAML::Load(v);
                 typename std::list<T> vec;
                 std::stringstream ss;
-                for(size_t i = 0; i < node.size(); ++i) 
+                for (size_t i = 0; i < node.size(); ++i) 
                 {
                     ss.str("");
                     ss << node[i];
@@ -174,7 +176,7 @@ namespace JerryFish {
             std::string operator()(const std::list<T>& v) 
             {
                 YAML::Node node(YAML::NodeType::Sequence);
-                for(auto& i : v) 
+                for (auto& i : v) 
                 {
                     node.push_back(YAML::Load(LexicalCast<T, std::string>()(i)));
                 }
@@ -196,7 +198,7 @@ namespace JerryFish {
                 YAML::Node node = YAML::Load(v);
                 typename std::set<T> vec;
                 std::stringstream ss;
-                for(size_t i = 0; i < node.size(); ++i) 
+                for (size_t i = 0; i < node.size(); ++i) 
                 {
                     ss.str("");
                     ss << node[i];
@@ -216,7 +218,7 @@ namespace JerryFish {
             std::string operator()(const std::set<T>& v) 
             {
                 YAML::Node node(YAML::NodeType::Sequence);
-                for(auto& i : v) 
+                for (auto& i : v) 
                 {
                     node.push_back(YAML::Load(LexicalCast<T, std::string>()(i)));
                 }
@@ -238,7 +240,7 @@ namespace JerryFish {
                 YAML::Node node = YAML::Load(v);
                 typename std::unordered_set<T> vec;
                 std::stringstream ss;
-                for(size_t i = 0; i < node.size(); ++i) 
+                for (size_t i = 0; i < node.size(); ++i) 
                 {
                     ss.str("");
                     ss << node[i];
@@ -258,7 +260,7 @@ namespace JerryFish {
             std::string operator()(const std::unordered_set<T>& v) 
             {
                 YAML::Node node(YAML::NodeType::Sequence);
-                for(auto& i : v) 
+                for (auto& i : v) 
                 {
                     node.push_back(YAML::Load(LexicalCast<T, std::string>()(i)));
                 }
@@ -279,7 +281,7 @@ namespace JerryFish {
                 YAML::Node node = YAML::Load(v);
                 typename std::map<std::string, T> vec;
                 std::stringstream ss;
-                for(auto it = node.begin(); it != node.end(); ++it) 
+                for (auto it = node.begin(); it != node.end(); ++it) 
                 {
                     ss.str("");
                     ss << it->second;
@@ -299,7 +301,7 @@ namespace JerryFish {
             std::string operator()(const std::map<std::string, T>& v) 
             {
                 YAML::Node node(YAML::NodeType::Map);
-                for(auto& i : v) 
+                for (auto& i : v) 
                 {
                     node[i.first] = YAML::Load(LexicalCast<T, std::string>()(i.second));
                 }
@@ -321,7 +323,7 @@ namespace JerryFish {
                 YAML::Node node = YAML::Load(v);
                 typename std::unordered_map<std::string, T> vec;
                 std::stringstream ss;
-                for(auto it = node.begin(); it != node.end(); ++it) 
+                for (auto it = node.begin(); it != node.end(); ++it) 
                 {
                     ss.str("");
                     ss << it->second;
@@ -341,7 +343,7 @@ namespace JerryFish {
             std::string operator()(const std::unordered_map<std::string, T>& v) 
             {
                 YAML::Node node(YAML::NodeType::Map);
-                for(auto& i : v) 
+                for (auto& i : v) 
                 {
                     node[i.first] = YAML::Load(LexicalCast<T, std::string>()(i.second));
                 }
@@ -350,6 +352,7 @@ namespace JerryFish {
                 return ss.str();
             }
     };
+
 
     struct LogAppenderDefine 
     {
@@ -401,7 +404,8 @@ namespace JerryFish {
             {
                 YAML::Node n = YAML::Load(v);
                 LogDefine ld;
-                if(!n["name"].IsDefined()) 
+
+                if (!n["name"].IsDefined()) 
                 {
                     std::cout << "log config error: name is null, " << n
                         << std::endl;
@@ -409,18 +413,18 @@ namespace JerryFish {
                 }
                 ld.name = n["name"].as<std::string>();
                 ld.level = LogLevel::FromString(n["level"].IsDefined() ? n["level"].as<std::string>() : "");
-                if(n["formatter"].IsDefined()) 
+                if (n["formatter"].IsDefined()) 
                 {
                     ld.formatter = n["formatter"].as<std::string>();
                 }
 
-                if(n["appenders"].IsDefined()) 
+                if (n["appenders"].IsDefined()) 
                 {
                     //std::cout << "==" << ld.name << " = " << n["appenders"].size() << std::endl;
-                    for(size_t x = 0; x < n["appenders"].size(); ++x) 
+                    for (size_t x = 0; x < n["appenders"].size(); ++x) 
                     {
                         auto a = n["appenders"][x];
-                        if(!a["type"].IsDefined()) 
+                        if (!a["type"].IsDefined()) 
                         {
                             std::cout << "log config error: appender type is null, " << a
                                 << std::endl;
@@ -428,25 +432,25 @@ namespace JerryFish {
                         }
                         std::string type = a["type"].as<std::string>();
                         LogAppenderDefine lad;
-                        if(type == "FileLogAppender") 
+                        if (type == "FileLogAppender") 
                         {
                             lad.type = 1;
-                            if(!a["file"].IsDefined()) 
+                            if (!a["file"].IsDefined()) 
                             {
                                 std::cout << "log config error: fileappender file is null, " << a
                                     << std::endl;
                                 continue;
                             }
                             lad.file = a["file"].as<std::string>();
-                            if(a["formatter"].IsDefined()) 
+                            if (a["formatter"].IsDefined()) 
                             {
                                 lad.formatter = a["formatter"].as<std::string>();
                             }
                         } 
-                        else if(type == "StdoutLogAppender") 
+                        else if (type == "StdoutLogAppender") 
                         {
                             lad.type = 2;
-                            if(a["formatter"].IsDefined()) 
+                            if (a["formatter"].IsDefined()) 
                             {
                                 lad.formatter = a["formatter"].as<std::string>();
                             }
@@ -473,33 +477,34 @@ namespace JerryFish {
             {
                 YAML::Node n;
                 n["name"] = i.name;
-                if(i.level != LogLevel::UNKNOW) 
+
+                if (i.level != LogLevel::UNKNOW) 
                 {
                     n["level"] = LogLevel::ToString(i.level);
                 }
-                if(!i.formatter.empty()) 
+                if (!i.formatter.empty()) 
                 {
                     n["formatter"] = i.formatter;
                 }
 
-                for(auto& a : i.appenders) 
+                for (auto& a : i.appenders) 
                 {
                     YAML::Node na;
-                    if(a.type == 1) 
+                    if (a.type == 1) 
                     {
                         na["type"] = "FileLogAppender";
                         na["file"] = a.file;
                     } 
-                    else if(a.type == 2) 
+                    else if (a.type == 2) 
                     {
                         na["type"] = "StdoutLogAppender";
                     }
-                    if(a.level != LogLevel::UNKNOW) 
+                    if (a.level != LogLevel::UNKNOW) 
                     {
                         na["level"] = LogLevel::ToString(a.level);
                     }
 
-                    if(!a.formatter.empty()) 
+                    if (!a.formatter.empty()) 
                     {
                         na["formatter"] = a.formatter;
                     }
@@ -513,6 +518,144 @@ namespace JerryFish {
     };
 
 
+    /**
+     * @brief 类型转换模板类片特化(YAML String 转换成 std::vector<T>)
+     */
+    template<>
+    class LexicalCast<std::string, std::set<LogDefine>> 
+    {
+        public:
+            std::set<LogDefine> operator()(const std::string& v) 
+            {
+                YAML::Node node = YAML::Load(v);
+                std::set<LogDefine> vec;
+
+                for (size_t i = 0; i < node.size(); ++i) 
+                {
+                    auto n = node[i];
+
+                    if (!n["name"].IsDefined())
+                    {
+                        std::cout << "log config error: name is null, " << n << std::endl;
+                        continue;
+                    }
+
+                    LogDefine ld;
+                    ld.name = n["name"].as<std::string>();
+                    ld.level = LogLevel::FromString(n["level"].IsDefined() ? n["level"].as<std::string>() : "");
+
+                    if (n["formatter"].IsDefined())
+                    {
+                        ld.formatter = n["formatter"].as<std::string>();
+                    }
+
+                    if (n["appenders"].IsDefined())
+                    {
+                        for (size_t j = 0; j < n["appenders"].size(); ++j)
+                        {
+                            auto a = n["appenders"][i];
+
+                            if (!a["type"].IsDefined())
+                            {
+                                std::cout << "log config error: appender tyep is null, " << a << std::endl;
+                                continue;
+                            }
+
+                            std::string type = a["type"].as<std::string>();
+                            LogAppenderDefine lad;
+
+                            if (type == "FileLogAppender")
+                            {
+                                lad.type = 1;
+
+                                if (!a["file"].IsDefined())
+                                {
+                                    std::cout << "log config error: fileappender tyep is null, " << a << std::endl;
+                                    continue;
+                                }
+
+                                lad.file = a["file"].as<std::string>();
+
+                                if (a["formatter"].IsDefined())
+                                {
+                                    lad.formatter = a["formatter"].as<std::string>();
+                                }
+                            }
+                            else if (type == "StdoutAppender")
+                            {
+                                lad.type = 2;
+                            }
+                            else
+                            {
+                                std::cout << "log config error: appender tyep is null, " << a << std::endl;
+                                continue;
+                            }
+
+                            ld.appenders.push_back(lad);
+                        }
+                    }
+
+                    vec.insert(ld);
+                }
+
+                return vec;
+            }
+    };
+
+    /**
+     * @brief 类型转换模板类片特化(std::vector<T> 转换成 YAML String)
+     */
+    template<>
+    class LexicalCast<std::set<LogDefine>, std::string> 
+    {
+        public:
+            std::string operator()(const std::set<LogDefine>& v) 
+            {
+                YAML::Node node(YAML::NodeType::Sequence);
+
+                for (auto& i : v) 
+                {
+                    YAML::Node n;
+                    n["name"] = i.name;
+                    n["level"] = LogLevel::ToString(i.level);
+
+                    if (i.formatter.empty())
+                    {
+                        n["level"] = i.formatter;
+                    }
+
+                    for (auto& a: i.appenders)
+                    {
+                        YAML::Node na;
+
+                        if (a.type == 1)
+                        {
+                            na["type"] = "FileLogAppender";
+                            na["file"] = a.file;
+                        }
+                        else if (a.type == 2)
+                        {
+                            na["type"] = "StdoutAppender";
+                        }
+
+                        na["level"] = LogLevel::ToString(a.level);
+
+                        if (!a.formatter.empty())
+                        {
+                            na["formatter"] = a.formatter;
+                        }
+
+                        n["appenders"].push_back(na);
+                    }
+
+                    node.push_back(n);
+                }
+
+                std::stringstream ss;
+                ss << node;
+                return ss.str();
+            }
+    };
     /**
      * @brief 配置参数模板子类,保存对应类型的参数值
      * @details T 参数的具体类型
@@ -592,10 +735,13 @@ namespace JerryFish {
             {
                 {
                     ////RWMutexType::ReadLock lock(m_mutex);
-                    if(v == m_val) {
+                    if (v == m_val) 
+                    {
                         return;
                     }
-                    for(auto& i : m_cbs) {
+
+                    for (auto& i : m_cbs) 
+                    {
                         i.second(m_val, v);
                     }
                 }
@@ -683,12 +829,17 @@ namespace JerryFish {
             {
                 ////RWMutexType::WriteLock lock(GetMutex());
                 auto it = GetDatas().find(name);
-                if(it != GetDatas().end()) {
+
+                if (it != GetDatas().end()) 
+                {
                     auto tmp = std::dynamic_pointer_cast<ConfigVar<T> >(it->second);
-                    if(tmp) {
+                    if (tmp) 
+                    {
                         JERRYFISH_LOG_INFO(JERRYFISH_LOG_ROOT()) << "Lookup name=" << name << " exists";
                         return tmp;
-                    } else {
+                    } 
+                    else 
+                    {
                         JERRYFISH_LOG_ERROR(JERRYFISH_LOG_ROOT()) << "Lookup name=" << name << " exists but type not "
                             << TypeToName<T>() << " real_type=" << it->second->getTypeName()
                             << " " << it->second->toString();
@@ -696,8 +847,9 @@ namespace JerryFish {
                     }
                 }
 
-                if(name.find_first_not_of("abcdefghikjlmnopqrstuvwxyz._012345678")
-                        != std::string::npos) {
+                if (name.find_first_not_of("abcdefghikjlmnopqrstuvwxyz._012345678")
+                        != std::string::npos) 
+                {
                     JERRYFISH_LOG_ERROR(JERRYFISH_LOG_ROOT()) << "Lookup name invalid " << name;
                     throw std::invalid_argument(name);
                 }
@@ -713,12 +865,16 @@ namespace JerryFish {
              * @return 返回配置参数名为name的配置参数
              */
             template<class T>
-            static typename ConfigVar<T>::ptr Lookup(const std::string& name) {
+            static typename ConfigVar<T>::ptr Lookup(const std::string& name) 
+            {
                 ////RWMutexType::ReadLock lock(GetMutex());
                 auto it = GetDatas().find(name);
-                if(it == GetDatas().end()) {
+
+                if (it == GetDatas().end()) 
+                {
                     return nullptr;
                 }
+
                 return std::dynamic_pointer_cast<ConfigVar<T> >(it->second);
             }
 
@@ -730,19 +886,26 @@ namespace JerryFish {
                 std::list<std::pair<std::string, const YAML::Node> > all_nodes;
                 ListAllMember("", root, all_nodes);
 
-                for(auto& i : all_nodes) {
+                for (auto& i : all_nodes) 
+                {
                     std::string key = i.first;
-                    if(key.empty()) {
+
+                    if (key.empty()) 
+                    {
                         continue;
                     }
 
                     std::transform(key.begin(), key.end(), key.begin(), ::tolower);
                     ConfigVarBase::ptr var = LookupBase(key);
 
-                    if(var) {
-                        if(i.second.IsScalar()) {
+                    if (var) 
+                    {
+                        if (i.second.IsScalar()) 
+                        {
                             var->fromString(i.second.Scalar());
-                        } else {
+                        } 
+                        else 
+                        {
                             std::stringstream ss;
                             ss << i.second;
                             var->fromString(ss.str());
@@ -759,12 +922,12 @@ namespace JerryFish {
             //std::vector<std::string> files;
             //FSUtil::ListAllFile(files, absoulte_path, ".yml");
 
-            //for(auto& i : files) {
+            //for (auto& i : files) {
             //{
             //struct stat st;
             //lstat(i.c_str(), &st);
             ////JerryFish::Mutex::Lock lock(s_mutex);
-            //if(!force && s_file2modifytime[i] == (uint64_t)st.st_mtime) {
+            //if (!force && s_file2modifytime[i] == (uint64_t)st.st_mtime) {
             //continue;
             //}
             //s_file2modifytime[i] = st.st_mtime;
@@ -785,7 +948,8 @@ namespace JerryFish {
              * @brief 查找配置参数,返回配置参数的基类
              * @param[in] name 配置参数名称
              */
-            static ConfigVarBase::ptr LookupBase(const std::string& name){
+            static ConfigVarBase::ptr LookupBase(const std::string& name)
+            {
                 ////RWMutexType::ReadLock lock(GetMutex());
                 auto it = GetDatas().find(name);
                 return it == GetDatas().end() ? nullptr : it->second;
@@ -795,11 +959,13 @@ namespace JerryFish {
              * @brief 遍历配置模块里面所有配置项
              * @param[in] cb 配置项回调函数
              */
-            static void Visit(std::function<void(ConfigVarBase::ptr)> cb){
+            static void Visit(std::function<void(ConfigVarBase::ptr)> cb)
+            {
                 ////RWMutexType::ReadLock lock(GetMutex());
                 ConfigVarMap& m = GetDatas();
-                for(auto it = m.begin();
-                        it != m.end(); ++it) {
+
+                for (auto it = m.begin(); it != m.end(); ++it) 
+                {
                     cb(it->second);
                 }
             }
@@ -808,7 +974,8 @@ namespace JerryFish {
             /**
              * @brief 返回所有的配置项
              */
-            static ConfigVarMap& GetDatas() {
+            static ConfigVarMap& GetDatas() 
+            {
                 static ConfigVarMap s_datas;
                 return s_datas;
             }
@@ -825,19 +992,19 @@ namespace JerryFish {
                     const YAML::Node& node,
                     std::list<std::pair<std::string, const YAML::Node> >& output) 
             {
-                if(prefix.find_first_not_of("abcdefghikjlmnopqrstuvwxyz._012345678")
-                        != std::string::npos) {
+                if (prefix.find_first_not_of("abcdefghikjlmnopqrstuvwxyz._012345678") != std::string::npos) 
+                {
                     JERRYFISH_LOG_ERROR(getLogger()) << "Config invalid name: " << prefix << " : " << node;
                     return;
                 }
 
                 output.push_back(std::make_pair(prefix, node));
 
-                if(node.IsMap()) {
-                    for(auto it = node.begin();
-                            it != node.end(); ++it) {
-                        ListAllMember(prefix.empty() ? it->first.Scalar()
-                                : prefix + "." + it->first.Scalar(), it->second, output);
+                if (node.IsMap()) 
+                {
+                    for (auto it = node.begin(); it != node.end(); ++it) 
+                    {
+                        ListAllMember(prefix.empty() ? it->first.Scalar() : prefix + "." + it->first.Scalar(), it->second, output);
                     }
                 }
             }
@@ -874,13 +1041,14 @@ namespace JerryFish {
             getLogDefines()->addListener([](const std::set<LogDefine>& old_value, const std::set<LogDefine>& new_value)
             {
                     JERRYFISH_LOG_INFO(JERRYFISH_LOG_ROOT()) << "on_logger_conf_changed";
-                    for(auto& i : new_value) 
+
+                    for (auto& i : new_value) 
                     {
                         auto it = old_value.find(i);
                         JerryFish::Logger::ptr logger;
-                        if(it == old_value.end()) 
+
+                        if (it == old_value.end()) 
                         {
-                            //新增logger
                             logger = JERRYFISH_LOG_NAME(i.name);
                         } 
                         else 
@@ -897,25 +1065,27 @@ namespace JerryFish {
                         }
 
                         logger->setLevel(i.level);
-                        //std::cout << "** " << i.name << " level=" << i.level
-                        //<< "  " << logger << std::endl;
-                        if(!i.formatter.empty()) 
+
+                        if (!i.formatter.empty()) 
                         {
                             logger->setFormatter(i.formatter);
                         }
 
                         logger->clearAppenders();
 
-                        for(auto& a : i.appenders) 
+                        for (auto& a : i.appenders) 
                         {
                             JerryFish::LogAppender::ptr ap;
-                            if(a.type == 1) 
+
+                            if (a.type == 1) 
                             {
                                 ap.reset(new FileLogAppender(a.file));
                             } 
-                            else if(a.type == 2) 
+                            else if (a.type == 2) 
                             {
-                                //if(!JerryFish::EnvMgr::GetInstance()->has("d")) 
+                                ap.reset(new StdoutLogAppender);
+
+                                //if (!JerryFish::EnvMgr::GetInstance()->has("d")) 
                                 //{
                                     //ap.reset(new StdoutLogAppender);
                                 //} 
@@ -927,10 +1097,11 @@ namespace JerryFish {
 
                             ap->setLevel(a.level);
 
-                            if(!a.formatter.empty()) 
+                            if (!a.formatter.empty()) 
                             {
                                 LogFormatter::ptr fmt(new LogFormatter(a.formatter));
-                                if(!fmt->isError()) 
+
+                                if (!fmt->isError()) 
                                 {
                                     ap->setFormatter(fmt);
                                 } 
@@ -945,10 +1116,10 @@ namespace JerryFish {
                         }
                     }
 
-                    for(auto& i : old_value) 
+                    for (auto& i : old_value) 
                     {
                         auto it = new_value.find(i);
-                        if(it == new_value.end()) 
+                        if (it == new_value.end()) 
                         {
                             //删除logger
                             auto logger = JERRYFISH_LOG_NAME(i.name);
@@ -960,6 +1131,11 @@ namespace JerryFish {
         }
     };
 
+    static JerryFish::LogIniter getLogInit()
+    {
+        static JerryFish::LogIniter __log_init;
+        return __log_init;
+    }
 }
 
 #endif /* !CONFIG_H */
