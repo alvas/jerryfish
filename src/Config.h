@@ -22,6 +22,9 @@
 #include <functional>
 #include <sys/stat.h>
 
+#include "rapidjson/document.h"
+#include "rapidjson/writer.h"
+#include "rapidjson/stringbuffer.h"
 #include "Logger.h"
 #include "Utils.h"
 #include "Debugger.h"
@@ -101,6 +104,60 @@ namespace JerryFish {
             }
     };
 
+    template<class F, class T>
+    class JsonCast
+    {
+        public:
+            T operator()(const F& v)
+            {
+                return boost::lexical_cast<T>(v);
+            }
+    };
+
+    template <class T>
+    class JsonCast<std::string, std::vector<T>>
+    {
+        public:
+            std::vector<T> operator()(const std::string& v)
+            {
+                rapidjson::Document d;
+                d.Parse(v.c_str());
+                std::vector<T> result;
+
+                if (d.IsArray())
+                {
+                    for (auto &v: d.GetArray())
+                    {
+                        result.push_back(JsonCast<std::string, T>()(v));
+                    }
+                }
+
+                return result;
+            }
+    };
+
+    template<class T>
+    class JsonCast<std::vector<T>, std::string> 
+    {
+        public:
+            std::string operator()(const std::vector<T>& v) 
+            {
+                rapidjson::Document d;
+                rapidjson::Value a(rapidjson::kArrayType);
+                rapidjson::Document::AllocatorType& allocator = d.GetAllocator();
+
+                for (auto& i : v) 
+                {
+                    a.PushBack(i, allocator);
+                }
+
+                rapidjson::StringBuffer buffer;
+                rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
+                d.Accept(writer);
+                return std::string(buffer.GetString());
+            }
+    };
+
     /**
      * @brief 类型转换模板类片特化(YAML String 转换成 std::vector<T>)
      */
@@ -113,6 +170,7 @@ namespace JerryFish {
                 YAML::Node node = YAML::Load(v);
                 typename std::vector<T> vec;
                 std::stringstream ss;
+
                 for (size_t i = 0; i < node.size(); ++i) 
                 {
                     ss.str("");
@@ -134,10 +192,12 @@ namespace JerryFish {
             std::string operator()(const std::vector<T>& v) 
             {
                 YAML::Node node(YAML::NodeType::Sequence);
+
                 for (auto& i : v) 
                 {
                     node.push_back(YAML::Load(LexicalCast<T, std::string>()(i)));
                 }
+
                 std::stringstream ss;
                 ss << node;
                 return ss.str();
@@ -156,12 +216,14 @@ namespace JerryFish {
                 YAML::Node node = YAML::Load(v);
                 typename std::list<T> vec;
                 std::stringstream ss;
+
                 for (size_t i = 0; i < node.size(); ++i) 
                 {
                     ss.str("");
                     ss << node[i];
                     vec.push_back(LexicalCast<std::string, T>()(ss.str()));
                 }
+
                 return vec;
             }
     };
@@ -176,10 +238,12 @@ namespace JerryFish {
             std::string operator()(const std::list<T>& v) 
             {
                 YAML::Node node(YAML::NodeType::Sequence);
+
                 for (auto& i : v) 
                 {
                     node.push_back(YAML::Load(LexicalCast<T, std::string>()(i)));
                 }
+
                 std::stringstream ss;
                 ss << node;
                 return ss.str();
@@ -198,12 +262,14 @@ namespace JerryFish {
                 YAML::Node node = YAML::Load(v);
                 typename std::set<T> vec;
                 std::stringstream ss;
+
                 for (size_t i = 0; i < node.size(); ++i) 
                 {
                     ss.str("");
                     ss << node[i];
                     vec.insert(LexicalCast<std::string, T>()(ss.str()));
                 }
+
                 return vec;
             }
     };
@@ -218,10 +284,12 @@ namespace JerryFish {
             std::string operator()(const std::set<T>& v) 
             {
                 YAML::Node node(YAML::NodeType::Sequence);
+
                 for (auto& i : v) 
                 {
                     node.push_back(YAML::Load(LexicalCast<T, std::string>()(i)));
                 }
+
                 std::stringstream ss;
                 ss << node;
                 return ss.str();
@@ -240,12 +308,14 @@ namespace JerryFish {
                 YAML::Node node = YAML::Load(v);
                 typename std::unordered_set<T> vec;
                 std::stringstream ss;
+
                 for (size_t i = 0; i < node.size(); ++i) 
                 {
                     ss.str("");
                     ss << node[i];
                     vec.insert(LexicalCast<std::string, T>()(ss.str()));
                 }
+
                 return vec;
             }
     };
@@ -260,10 +330,12 @@ namespace JerryFish {
             std::string operator()(const std::unordered_set<T>& v) 
             {
                 YAML::Node node(YAML::NodeType::Sequence);
+
                 for (auto& i : v) 
                 {
                     node.push_back(YAML::Load(LexicalCast<T, std::string>()(i)));
                 }
+
                 std::stringstream ss;
                 ss << node;
                 return ss.str();
@@ -277,16 +349,19 @@ namespace JerryFish {
     class LexicalCast<std::string, std::map<std::string, T> > 
     {
         public:
-            std::map<std::string, T> operator()(const std::string& v) {
+            std::map<std::string, T> operator()(const std::string& v) 
+            {
                 YAML::Node node = YAML::Load(v);
                 typename std::map<std::string, T> vec;
                 std::stringstream ss;
+
                 for (auto it = node.begin(); it != node.end(); ++it) 
                 {
                     ss.str("");
                     ss << it->second;
                     vec.insert(std::make_pair(it->first.Scalar(), LexicalCast<std::string, T>()(ss.str())));
                 }
+
                 return vec;
             }
     };
@@ -301,10 +376,12 @@ namespace JerryFish {
             std::string operator()(const std::map<std::string, T>& v) 
             {
                 YAML::Node node(YAML::NodeType::Map);
+
                 for (auto& i : v) 
                 {
                     node[i.first] = YAML::Load(LexicalCast<T, std::string>()(i.second));
                 }
+
                 std::stringstream ss;
                 ss << node;
                 return ss.str();
@@ -385,6 +462,11 @@ namespace JerryFish {
                 && appenders == appenders;
         }
 
+        bool operator!=(const LogDefine& oth) const 
+        {
+            return !(*this == oth);
+        }
+
         bool operator<(const LogDefine& oth) const 
         {
             return name < oth.name;
@@ -407,12 +489,13 @@ namespace JerryFish {
 
                 if (!n["name"].IsDefined()) 
                 {
-                    std::cout << "log config error: name is null, " << n
-                        << std::endl;
+                    std::cout << "log config error: name is null, " << n << std::endl;
                     throw std::logic_error("log config name is null");
                 }
+
                 ld.name = n["name"].as<std::string>();
                 ld.level = LogLevel::FromString(n["level"].IsDefined() ? n["level"].as<std::string>() : "");
+
                 if (n["formatter"].IsDefined()) 
                 {
                     ld.formatter = n["formatter"].as<std::string>();
@@ -420,28 +503,31 @@ namespace JerryFish {
 
                 if (n["appenders"].IsDefined()) 
                 {
-                    //std::cout << "==" << ld.name << " = " << n["appenders"].size() << std::endl;
                     for (size_t x = 0; x < n["appenders"].size(); ++x) 
                     {
                         auto a = n["appenders"][x];
+
                         if (!a["type"].IsDefined()) 
                         {
-                            std::cout << "log config error: appender type is null, " << a
-                                << std::endl;
+                            std::cout << "log config error: appender type is null, " << a << std::endl;
                             continue;
                         }
+
                         std::string type = a["type"].as<std::string>();
                         LogAppenderDefine lad;
+
                         if (type == "FileLogAppender") 
                         {
                             lad.type = 1;
+
                             if (!a["file"].IsDefined()) 
                             {
-                                std::cout << "log config error: fileappender file is null, " << a
-                                    << std::endl;
+                                std::cout << "log config error: fileappender file is null, " << a << std::endl;
                                 continue;
                             }
+
                             lad.file = a["file"].as<std::string>();
+
                             if (a["formatter"].IsDefined()) 
                             {
                                 lad.formatter = a["formatter"].as<std::string>();
@@ -450,6 +536,7 @@ namespace JerryFish {
                         else if (type == "StdoutLogAppender") 
                         {
                             lad.type = 2;
+
                             if (a["formatter"].IsDefined()) 
                             {
                                 lad.formatter = a["formatter"].as<std::string>();
@@ -457,14 +544,14 @@ namespace JerryFish {
                         } 
                         else 
                         {
-                            std::cout << "log config error: appender type is invalid, " << a
-                                << std::endl;
+                            std::cout << "log config error: appender type is invalid, " << a << std::endl;
                             continue;
                         }
 
                         ld.appenders.push_back(lad);
                     }
                 }
+
                 return ld;
             }
     };
@@ -482,6 +569,7 @@ namespace JerryFish {
                 {
                     n["level"] = LogLevel::ToString(i.level);
                 }
+
                 if (!i.formatter.empty()) 
                 {
                     n["formatter"] = i.formatter;
@@ -490,6 +578,7 @@ namespace JerryFish {
                 for (auto& a : i.appenders) 
                 {
                     YAML::Node na;
+
                     if (a.type == 1) 
                     {
                         na["type"] = "FileLogAppender";
@@ -499,6 +588,7 @@ namespace JerryFish {
                     {
                         na["type"] = "StdoutLogAppender";
                     }
+
                     if (a.level != LogLevel::UNKNOW) 
                     {
                         na["level"] = LogLevel::ToString(a.level);
@@ -511,6 +601,7 @@ namespace JerryFish {
 
                     n["appenders"].push_back(na);
                 }
+
                 std::stringstream ss;
                 ss << n;
                 return ss.str();
@@ -663,12 +754,11 @@ namespace JerryFish {
      *          ToStr 从T转换成std::string的仿函数
      *          std::string 为YAML格式的字符串
      */
-    template<class T, class FromStr = LexicalCast<std::string, T>
-        ,class ToStr = LexicalCast<T, std::string> >
+    template<class T, class FromStr = LexicalCast<std::string, T>, class ToStr = LexicalCast<T, std::string>>
     class ConfigVar : public ConfigVarBase 
     {
         public:
-            ////typedef RWMutex RWMutexType;
+            typedef RWMutex RWMutexType;
             typedef std::shared_ptr<ConfigVar> ptr;
             typedef std::function<void (const T& old_value, const T& new_value)> on_change_cb;
 
@@ -682,23 +772,29 @@ namespace JerryFish {
                     ,const T& default_value
                     ,const std::string& description = "")
                 :ConfigVarBase(name, description)
-                ,m_val(default_value) {
-                }
+                ,m_val(default_value) 
+            {
+            }
 
             /**
              * @brief 将参数值转换成YAML String
              * @exception 当转换失败抛出异常
              */
-            std::string toString() override {
-                try {
+            std::string toString() override 
+            {
+                try 
+                {
                     //return boost::lexical_cast<std::string>(m_val);
-                    ////RWMutexType::ReadLock lock(m_mutex);
+                    RWMutexType::ReadLock lock(m_mutex);
                     return ToStr()(m_val);
-                } catch (std::exception& e) {
+                } 
+                catch (std::exception& e) 
+                {
                     JERRYFISH_LOG_ERROR(JERRYFISH_LOG_ROOT()) << "ConfigVar::toString exception "
                         << e.what() << " convert: " << TypeToName<T>() << " to string"
                         << " name=" << m_name;
                 }
+
                 return "";
             }
 
@@ -706,15 +802,20 @@ namespace JerryFish {
              * @brief 从YAML String 转成参数的值
              * @exception 当转换失败抛出异常
              */
-            bool fromString(const std::string& val) override {
-                try {
+            bool fromString(const std::string& val) override 
+            {
+                try 
+                {
                     setValue(FromStr()(val));
-                } catch (std::exception& e) {
+                } 
+                catch (std::exception& e) 
+                {
                     JERRYFISH_LOG_ERROR(JERRYFISH_LOG_ROOT()) << "ConfigVar::fromString exception "
                         << e.what() << " convert: string to " << TypeToName<T>()
                         << " name=" << m_name
                         << " - " << val;
                 }
+
                 return false;
             }
 
@@ -723,7 +824,7 @@ namespace JerryFish {
              */
             const T getValue() 
             {
-                ////RWMutexType::ReadLock lock(m_mutex);
+                RWMutexType::ReadLock lock(m_mutex);
                 return m_val;
             }
 
@@ -734,7 +835,7 @@ namespace JerryFish {
             void setValue(const T& v) 
             {
                 {
-                    ////RWMutexType::ReadLock lock(m_mutex);
+                    RWMutexType::ReadLock lock(m_mutex);
                     if (v == m_val) 
                     {
                         return;
@@ -745,7 +846,7 @@ namespace JerryFish {
                         i.second(m_val, v);
                     }
                 }
-                ////RWMutexType::WriteLock lock(m_mutex);
+                RWMutexType::WriteLock lock(m_mutex);
                 m_val = v;
             }
 
@@ -761,7 +862,7 @@ namespace JerryFish {
             uint64_t addListener(on_change_cb cb) 
             {
                 static uint64_t s_fun_id = 0;
-                ////RWMutexType::WriteLock lock(m_mutex);
+                RWMutexType::WriteLock lock(m_mutex);
                 ++s_fun_id;
                 m_cbs[s_fun_id] = cb;
                 return s_fun_id;
@@ -773,7 +874,7 @@ namespace JerryFish {
              */
             void delListener(uint64_t key) 
             {
-                ////RWMutexType::WriteLock lock(m_mutex);
+                RWMutexType::WriteLock lock(m_mutex);
                 m_cbs.erase(key);
             }
 
@@ -784,7 +885,7 @@ namespace JerryFish {
              */
             on_change_cb getListener(uint64_t key) 
             {
-                ////RWMutexType::ReadLock lock(m_mutex);
+                RWMutexType::ReadLock lock(m_mutex);
                 auto it = m_cbs.find(key);
                 return it == m_cbs.end() ? nullptr : it->second;
             }
@@ -794,11 +895,11 @@ namespace JerryFish {
              */
             void clearListener() 
             {
-                ////RWMutexType::WriteLock lock(m_mutex);
+                RWMutexType::WriteLock lock(m_mutex);
                 m_cbs.clear();
             }
         private:
-            ////RWMutexType m_mutex;
+            RWMutexType m_mutex;
             T m_val;
             //变更回调函数组, uint64_t key,要求唯一，一般可以用hash
             std::map<uint64_t, on_change_cb> m_cbs;
@@ -811,7 +912,7 @@ namespace JerryFish {
     class Config {
         public:
             typedef std::unordered_map<std::string, ConfigVarBase::ptr> ConfigVarMap;
-            ////typedef RWMutex RWMutexType;
+            typedef RWMutex RWMutexType;
 
             /**
              * @brief 获取/创建对应参数名的配置参数
@@ -827,12 +928,13 @@ namespace JerryFish {
             static typename ConfigVar<T>::ptr Lookup(const std::string& name,
                     const T& default_value, const std::string& description = "") 
             {
-                ////RWMutexType::WriteLock lock(GetMutex());
+                RWMutexType::WriteLock lock(GetMutex());
                 auto it = GetDatas().find(name);
 
                 if (it != GetDatas().end()) 
                 {
                     auto tmp = std::dynamic_pointer_cast<ConfigVar<T> >(it->second);
+
                     if (tmp) 
                     {
                         JERRYFISH_LOG_INFO(JERRYFISH_LOG_ROOT()) << "Lookup name=" << name << " exists";
@@ -847,8 +949,7 @@ namespace JerryFish {
                     }
                 }
 
-                if (name.find_first_not_of("abcdefghikjlmnopqrstuvwxyz._012345678")
-                        != std::string::npos) 
+                if (name.find_first_not_of("abcdefghikjlmnopqrstuvwxyz._012345678") != std::string::npos) 
                 {
                     JERRYFISH_LOG_ERROR(JERRYFISH_LOG_ROOT()) << "Lookup name invalid " << name;
                     throw std::invalid_argument(name);
@@ -867,7 +968,7 @@ namespace JerryFish {
             template<class T>
             static typename ConfigVar<T>::ptr Lookup(const std::string& name) 
             {
-                ////RWMutexType::ReadLock lock(GetMutex());
+                RWMutexType::ReadLock lock(GetMutex());
                 auto it = GetDatas().find(name);
 
                 if (it == GetDatas().end()) 
@@ -926,7 +1027,7 @@ namespace JerryFish {
             //{
             //struct stat st;
             //lstat(i.c_str(), &st);
-            ////JerryFish::Mutex::Lock lock(s_mutex);
+            //JerryFish::Mutex::Lock lock(s_mutex);
             //if (!force && s_file2modifytime[i] == (uint64_t)st.st_mtime) {
             //continue;
             //}
@@ -950,7 +1051,7 @@ namespace JerryFish {
              */
             static ConfigVarBase::ptr LookupBase(const std::string& name)
             {
-                ////RWMutexType::ReadLock lock(GetMutex());
+                RWMutexType::ReadLock lock(GetMutex());
                 auto it = GetDatas().find(name);
                 return it == GetDatas().end() ? nullptr : it->second;
             }
@@ -961,7 +1062,7 @@ namespace JerryFish {
              */
             static void Visit(std::function<void(ConfigVarBase::ptr)> cb)
             {
-                ////RWMutexType::ReadLock lock(GetMutex());
+                RWMutexType::ReadLock lock(GetMutex());
                 ConfigVarMap& m = GetDatas();
 
                 for (auto it = m.begin(); it != m.end(); ++it) 
@@ -983,14 +1084,12 @@ namespace JerryFish {
             /**
              * @brief 配置项的RWMutex
              */
-            //static RWMutexType& GetMutex() {
-            ////static RWMutexType s_mutex;
-            //return s_mutex;
-            //}
+            static RWMutexType& GetMutex() {
+                static RWMutexType s_mutex;
+                return s_mutex;
+            }
 
-            static void ListAllMember(const std::string& prefix,
-                    const YAML::Node& node,
-                    std::list<std::pair<std::string, const YAML::Node> >& output) 
+            static void ListAllMember(const std::string& prefix, const YAML::Node& node, std::list<std::pair<std::string, const YAML::Node> >& output) 
             {
                 if (prefix.find_first_not_of("abcdefghikjlmnopqrstuvwxyz._012345678") != std::string::npos) 
                 {
@@ -1021,11 +1120,11 @@ namespace JerryFish {
                 return s_file2modifytime;
             }
 
-            //static JerryFish::Mutex getMutex()
-            //{
-            //static JerryFish::Mutex s_mutex;
-            //return s_mutex;
-            //}
+            static JerryFish::Mutex& getMutex()
+            {
+                static JerryFish::Mutex s_mutex;
+                return s_mutex;
+            }
     };
 
     static ConfigVar<std::set<LogDefine> >::ptr getLogDefines()
@@ -1053,7 +1152,7 @@ namespace JerryFish {
                         } 
                         else 
                         {
-                            if (!(i == *it))
+                            if (i != *it)
                             {
                                 //修改的logger
                                 logger = JERRYFISH_LOG_NAME(i.name);

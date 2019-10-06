@@ -17,7 +17,7 @@ link_directories(/usr/local/lib)
 
 set(LIB_SRC
     src/Logger.cc
-    src/Utils.cc
+    src/Thread.cc
     )
 
 add_compile_definitions(DBOOST_STACKTRACE_USE_ADDR2LINE)
@@ -32,10 +32,15 @@ add_dependencies(test JerryFish)
 target_link_libraries(test JerryFish yaml-cpp)
 
 #find_library(YAMLCPP yaml-cpp)
+find_library(PTHREAD pthread)
 
 add_executable(test_config tests/test_config.cc)
 add_dependencies(test_config JerryFish)
 target_link_libraries(test_config JerryFish yaml-cpp dl)
+
+add_executable(test_thread tests/test_thread.cc)
+add_dependencies(test_thread JerryFish)
+target_link_libraries(test_thread JerryFish yaml-cpp dl)
 
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)

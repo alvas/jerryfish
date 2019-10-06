@@ -5,6 +5,8 @@
  * Distributed under terms of the MIT license.
  */
 
+#pragma once
+
 #ifndef UTILS_H
 #define UTILS_H
 
@@ -13,18 +15,53 @@
 #include <vector>
 #include <string>
 #include <fstream>
+#include <sys/syscall.h>
+#include <yaml-cpp/yaml.h>
+
+#include "Logger.h"
 
 namespace JerryFish {
+
+    static JerryFish::Logger::ptr getLogger()
+    {
+        JerryFish::Logger::ptr g_logger = JERRYFISH_LOG_NAME("system");
+        return g_logger;
+    }
 
     /**
      * @brief 返回当前线程的ID
      */
-    int GetThreadId();
+    int GetThreadId() {
+        return syscall(SYS_gettid);
+    }
 
     /**
      * @brief 返回当前协程的ID
      */
-    int GetFiberId();
+    int GetFiberId() {
+        //return JerryFish::Fiber::GetFiberId();
+        return 0;
+    }
+
+    //static std::string demangle(const char* str) 
+    //{
+        //size_t size = 0;
+        //int status = 0;
+        //std::string rt;
+        //rt.resize(256);
+        //if(1 == sscanf(str, "%*[^(]%*[^_]%255[^)+]", &rt[0])) {
+            //char* v = abi::__cxa_demangle(&rt[0], nullptr, &size, &status);
+            //if(v) {
+                //std::string result(v);
+                //free(v);
+                //return result;
+            //}
+        //}
+        //if(1 == sscanf(str, "%255s", &rt[0])) {
+            //return rt;
+        //}
+        //return str;
+    //}
 
     /**
      * @brief 获取当前的调用栈
@@ -32,15 +69,40 @@ namespace JerryFish {
      * @param[in] size 最多返回层数
      * @param[in] skip 跳过栈顶的层数
      */
-    //void Backtrace(std::vector<std::string>& bt, int size = 64, int skip = 1);
+    //void Backtrace(std::vector<std::string>& bt, int size = 64, int skip = 1)
+    //{
+        //void** array = (void**)malloc((sizeof(void*) * size));
+        //size_t s = ::backtrace(array, size);
 
+        //char** strings = backtrace_symbols(array, s);
+        //if(strings == NULL) {
+            //JERRYFISH_LOG_ERROR(getLogger()) << "backtrace_synbols error";
+            //return;
+        //}
+
+        //for(size_t i = skip; i < s; ++i) {
+            //bt.push_back(demangle(strings[i]));
+        //}
+
+        //free(strings);
+        //free(array);
+    //}
     /**
      * @brief 获取当前栈信息的字符串
      * @param[in] size 栈的最大层数
      * @param[in] skip 跳过栈顶的层数
      * @param[in] prefix 栈信息前输出的内容
      */
-    //std::string BacktraceToString(int size = 64, int skip = 2, const std::string& prefix = "");
+    //std::string BacktraceToString(int size = 64, int skip = 2, const std::string& prefix = "")
+    //{
+        //std::vector<std::string> bt;
+        //Backtrace(bt, size, skip);
+        //std::stringstream ss;
+        //for(size_t i = 0; i < bt.size(); ++i) {
+            //ss << prefix << bt[i] << std::endl;
+        //}
+        //return ss.str();
+    //}
 
     /**
      * @brief 获取当前时间的毫秒
@@ -244,4 +306,5 @@ namespace JerryFish {
         //}
 
 }
+
 #endif /* !UTILS_H */

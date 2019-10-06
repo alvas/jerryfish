@@ -13,14 +13,14 @@ namespace JerryFish {
 
     //static JerryFish::Logger::ptr g_logger = SYLAR_LOG_NAME("system");
 
-    int GetThreadId() {
-        return syscall(SYS_gettid);
-    }
+    //int GetThreadId() {
+        //return syscall(SYS_gettid);
+    //}
 
-    int GetFiberId() {
-        //return JerryFish::Fiber::GetFiberId();
-        return 0;
-    }
+    //int GetFiberId() {
+        ////return JerryFish::Fiber::GetFiberId();
+        //return 0;
+    //}
 
     //static std::string demangle(const char* str) {
         //size_t size = 0;

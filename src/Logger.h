@@ -7,8 +7,8 @@
 
 #pragma once
 
-#ifndef LOGGER
-#define LOGGER
+#ifndef LOGGER_H
+#define LOGGER_H
 
 #include <fstream>
 #include <functional>
@@ -25,6 +25,7 @@
 //#include "Config.h"
 #include "Singleton.h"
 #include "Debugger.h"
+#include "Mutex.h"
 
 /**
  * @brief 使用流式方式将日志级别level的日志写入到logger
@@ -383,7 +384,8 @@ namespace JerryFish
                 return ss.str();
             }
 
-            std::ostream& format(std::ostream& ofs, std::shared_ptr<Logger> logger, LogLevel::Level level, LogEvent::ptr event){
+            std::ostream& format(std::ostream& ofs, std::shared_ptr<Logger> logger, LogLevel::Level level, LogEvent::ptr event)
+            {
                 for (auto& i : m_items) 
                 {
                     i->format(ofs, logger, level, event);
@@ -446,7 +448,7 @@ namespace JerryFish
 
         public:
             typedef std::shared_ptr<LogAppender> ptr;
-            //typedef Spinlock MutexType;
+            typedef Spinlock MutexType;
 
             /**
              * @brief 析构函数
@@ -471,11 +473,15 @@ namespace JerryFish
              */
             void setFormatter(LogFormatter::ptr val)
             {
-                //MutexType::Lock lock(m_mutex);
+                MutexType::Lock lock(m_mutex);
                 m_formatter = val;
-                if (m_formatter) {
+
+                if (m_formatter) 
+                {
                     m_hasFormatter = true;
-                } else {
+                } 
+                else 
+                {
                     m_hasFormatter = false;
                 }
             }
@@ -485,7 +491,7 @@ namespace JerryFish
              */
             LogFormatter::ptr getFormatter()
             {
-                //MutexType::Lock lock(m_mutex);
+                MutexType::Lock lock(m_mutex);
                 return m_formatter;
             }
 
@@ -504,7 +510,7 @@ namespace JerryFish
             /// 是否有自己的日志格式器
             bool m_hasFormatter = false;
             /// Mutex
-            //MutexType m_mutex;
+            MutexType m_mutex;
             /// 日志格式器
             LogFormatter::ptr m_formatter;
     };
@@ -518,13 +524,13 @@ namespace JerryFish
 
         public:
             typedef std::shared_ptr<Logger> ptr;
-            //typedef Spinlock MutexType;
+            typedef Spinlock MutexType;
 
             /**
              * @brief 构造函数
              * @param[in] name 日志器名称
              */
-            Logger(const std::string& name = "root"):m_name(name) ,m_level(LogLevel::DEBUG) 
+            Logger(const std::string& name = "root"):m_name(name), m_level(LogLevel::DEBUG) 
             { 
                 m_formatter.reset(new LogFormatter("%d{%Y-%m-%d %H:%M:%S}%T%t%T%N%T%F%T[%p]%T[%c]%T%f:%l%T%m%n"));
             }
@@ -536,14 +542,21 @@ namespace JerryFish
              */
             void log(LogLevel::Level level, LogEvent::ptr event)
             {
-                if (level >= m_level) {
+                if (level >= m_level) 
+                {
                     auto self = shared_from_this();
-                    //MutexType::Lock lock(m_mutex);
-                    if (!m_appenders.empty()) {
-                        for (auto& i : m_appenders) {
+                    MutexType::Lock lock(m_mutex);
+
+                    if (!m_appenders.empty()) 
+                    {
+                        for (auto& i : m_appenders) 
+                        {
                             i->log(self, level, event);
                         }
-                    } else if (m_root) {
+
+                    } 
+                    else if (m_root) 
+                    {
                         m_root->log(level, event);
                     }
                 }
@@ -601,10 +614,10 @@ namespace JerryFish
              */
             void addAppender(LogAppender::ptr appender)
             {
-                //MutexType::Lock lock(m_mutex);
+                MutexType::Lock lock(m_mutex);
                 if (!appender->getFormatter()) 
                 {
-                    //MutexType::Lock ll(appender->m_mutex);
+                    MutexType::Lock ll(appender->m_mutex);
                     appender->m_formatter = m_formatter;
                 }
 
@@ -617,7 +630,7 @@ namespace JerryFish
              */
             void delAppender(LogAppender::ptr appender)
             {
-                //MutexType::Lock lock(m_mutex);
+                MutexType::Lock lock(m_mutex);
                 for (auto it = m_appenders.begin(); it != m_appenders.end(); ++it) 
                 {
                     if (*it == appender) 
@@ -633,7 +646,7 @@ namespace JerryFish
              */
             void clearAppenders()
             {
-                //MutexType::Lock lock(m_mutex);
+                MutexType::Lock lock(m_mutex);
                 m_appenders.clear();
             }
 
@@ -657,12 +670,12 @@ namespace JerryFish
              */
             void setFormatter(LogFormatter::ptr val)
             {
-                //MutexType::Lock lock(m_mutex);
+                MutexType::Lock lock(m_mutex);
                 m_formatter = val;
 
                 for (auto& i : m_appenders) 
                 {
-                    //MutexType::Lock ll(i->m_mutex);
+                    MutexType::Lock ll(i->m_mutex);
                     if (!i->m_hasFormatter) 
                     {
                         i->m_formatter = m_formatter;
@@ -695,7 +708,7 @@ namespace JerryFish
              */
             LogFormatter::ptr getFormatter()
             {
-                //MutexType::Lock lock(m_mutex);
+                MutexType::Lock lock(m_mutex);
                 return m_formatter;
             }
 
@@ -704,9 +717,10 @@ namespace JerryFish
              */
             std::string toYamlString()
             {
-                //MutexType::Lock lock(m_mutex);
+                MutexType::Lock lock(m_mutex);
                 YAML::Node node;
                 node["name"] = m_name;
+
                 if (m_level != LogLevel::UNKNOW) 
                 {
                     node["level"] = LogLevel::ToString(m_level);
@@ -733,7 +747,7 @@ namespace JerryFish
             /// 日志级别
             LogLevel::Level m_level;
             /// Mutex
-            //MutexType m_mutex;
+            MutexType m_mutex;
             /// 日志目标集合
             std::list<LogAppender::ptr> m_appenders;
             /// 日志格式器
@@ -746,7 +760,8 @@ namespace JerryFish
     {
         public:
             MessageFormatItem(const std::string& str = "") {}
-            void format(std::ostream& os, Logger::ptr logger, LogLevel::Level level, LogEvent::ptr event) override {
+            void format(std::ostream& os, Logger::ptr logger, LogLevel::Level level, LogEvent::ptr event) override 
+            {
                 os << event->getContent();
             }
     };
@@ -755,7 +770,8 @@ namespace JerryFish
     {
         public:
             LevelFormatItem(const std::string& str = "") {}
-            void format(std::ostream& os, Logger::ptr logger, LogLevel::Level level, LogEvent::ptr event) override {
+            void format(std::ostream& os, Logger::ptr logger, LogLevel::Level level, LogEvent::ptr event) override 
+            {
                 os << LogLevel::ToString(level);
             }
     };
@@ -764,7 +780,8 @@ namespace JerryFish
     {
         public:
             ElapseFormatItem(const std::string& str = "") {}
-            void format(std::ostream& os, Logger::ptr logger, LogLevel::Level level, LogEvent::ptr event) override {
+            void format(std::ostream& os, Logger::ptr logger, LogLevel::Level level, LogEvent::ptr event) override 
+            {
                 os << event->getElapse();
             }
     };
@@ -773,7 +790,8 @@ namespace JerryFish
     {
         public:
             NameFormatItem(const std::string& str = "") {}
-            void format(std::ostream& os, Logger::ptr logger, LogLevel::Level level, LogEvent::ptr event) override {
+            void format(std::ostream& os, Logger::ptr logger, LogLevel::Level level, LogEvent::ptr event) override 
+            {
                 os << event->getLogger()->getName();
             }
     };
@@ -782,7 +800,8 @@ namespace JerryFish
     {
         public:
             ThreadIdFormatItem(const std::string& str = "") {}
-            void format(std::ostream& os, Logger::ptr logger, LogLevel::Level level, LogEvent::ptr event) override {
+            void format(std::ostream& os, Logger::ptr logger, LogLevel::Level level, LogEvent::ptr event) override 
+            {
                 os << event->getThreadId();
             }
     };
@@ -791,7 +810,8 @@ namespace JerryFish
     {
         public:
             FiberIdFormatItem(const std::string& str = "") {}
-            void format(std::ostream& os, Logger::ptr logger, LogLevel::Level level, LogEvent::ptr event) override {
+            void format(std::ostream& os, Logger::ptr logger, LogLevel::Level level, LogEvent::ptr event) override 
+            {
                 os << event->getFiberId();
             }
     };
@@ -800,7 +820,8 @@ namespace JerryFish
     {
         public:
             ThreadNameFormatItem(const std::string& str = "") {}
-            void format(std::ostream& os, Logger::ptr logger, LogLevel::Level level, LogEvent::ptr event) override {
+            void format(std::ostream& os, Logger::ptr logger, LogLevel::Level level, LogEvent::ptr event) override 
+            {
                 os << event->getThreadName();
             }
     };
@@ -809,13 +830,16 @@ namespace JerryFish
     {
         public:
             DateTimeFormatItem(const std::string& format = "%Y-%m-%d %H:%M:%S")
-                :m_format(format) {
-                    if (m_format.empty()) {
+                :m_format(format) 
+                {
+                    if (m_format.empty()) 
+                    {
                         m_format = "%Y-%m-%d %H:%M:%S";
                     }
                 }
 
-            void format(std::ostream& os, Logger::ptr logger, LogLevel::Level level, LogEvent::ptr event) override {
+            void format(std::ostream& os, Logger::ptr logger, LogLevel::Level level, LogEvent::ptr event) override 
+            {
                 struct tm tm;
                 time_t time = event->getTime();
                 localtime_r(&time, &tm);
@@ -831,7 +855,8 @@ namespace JerryFish
     {
         public:
             FilenameFormatItem(const std::string& str = "") {}
-            void format(std::ostream& os, Logger::ptr logger, LogLevel::Level level, LogEvent::ptr event) override {
+            void format(std::ostream& os, Logger::ptr logger, LogLevel::Level level, LogEvent::ptr event) override 
+            {
                 os << event->getFile();
             }
     };
@@ -839,7 +864,8 @@ namespace JerryFish
     class LineFormatItem : public LogFormatter::FormatItem {
         public:
             LineFormatItem(const std::string& str = "") {}
-            void format(std::ostream& os, Logger::ptr logger, LogLevel::Level level, LogEvent::ptr event) override {
+            void format(std::ostream& os, Logger::ptr logger, LogLevel::Level level, LogEvent::ptr event) override 
+            {
                 os << event->getLine();
             }
     };
@@ -848,7 +874,8 @@ namespace JerryFish
     {
         public:
             NewLineFormatItem(const std::string& str = "") {}
-            void format(std::ostream& os, Logger::ptr logger, LogLevel::Level level, LogEvent::ptr event) override {
+            void format(std::ostream& os, Logger::ptr logger, LogLevel::Level level, LogEvent::ptr event) override 
+            {
                 os << std::endl;
             }
     };
@@ -859,7 +886,8 @@ namespace JerryFish
         public:
             StringFormatItem(const std::string& str)
                 :m_string(str) {}
-            void format(std::ostream& os, Logger::ptr logger, LogLevel::Level level, LogEvent::ptr event) override {
+            void format(std::ostream& os, Logger::ptr logger, LogLevel::Level level, LogEvent::ptr event) override 
+            {
                 os << m_string;
             }
         private:
@@ -870,7 +898,8 @@ namespace JerryFish
     {
         public:
             TabFormatItem(const std::string& str = "") {}
-            void format(std::ostream& os, Logger::ptr logger, LogLevel::Level level, LogEvent::ptr event) override {
+            void format(std::ostream& os, Logger::ptr logger, LogLevel::Level level, LogEvent::ptr event) override 
+            {
                 os << "\t";
             }
         private:
@@ -931,14 +960,14 @@ namespace JerryFish
             void log(Logger::ptr logger, LogLevel::Level level, LogEvent::ptr event) override
             {
                 if (level >= m_level) {
-                    //MutexType::Lock lock(m_mutex);
+                    MutexType::Lock lock(m_mutex);
                     m_formatter->format(std::cout, logger, level, event);
                 }
             }
 
             std::string toYamlString() override
             {
-                //MutexType::Lock lock(m_mutex);
+                MutexType::Lock lock(m_mutex);
                 YAML::Node node;
                 node["type"] = "StdoutLogAppender";
                 if (m_level != LogLevel::UNKNOW) 
@@ -981,7 +1010,7 @@ namespace JerryFish
                         m_lastTime = now;
                     }
 
-                    //MutexType::Lock lock(m_mutex);
+                    MutexType::Lock lock(m_mutex);
 
                     if (!m_formatter->format(m_filestream, logger, level, event)) 
                     {
@@ -992,7 +1021,7 @@ namespace JerryFish
 
             std::string toYamlString() override
             {
-                //MutexType::Lock lock(m_mutex);
+                MutexType::Lock lock(m_mutex);
                 YAML::Node node;
                 node["type"] = "FileLogAppender";
                 node["file"] = m_filename;
@@ -1018,7 +1047,7 @@ namespace JerryFish
              */
             bool reopen()
             {
-                //MutexType::Lock lock(m_mutex);
+                MutexType::Lock lock(m_mutex);
                 if (m_filestream) 
                 {
                     m_filestream.close();
@@ -1043,7 +1072,7 @@ namespace JerryFish
     class LoggerManager 
     {
         public:
-            //typedef Spinlock MutexType;
+            typedef Spinlock MutexType;
             /**
              * @brief 构造函数
              */
@@ -1051,10 +1080,7 @@ namespace JerryFish
             {
                 m_root.reset(new Logger);
                 m_root->addAppender(LogAppender::ptr(new StdoutLogAppender));
-
-                std::cout << "LoggerManager.m_root->name: " << m_root->m_name << std::endl; 
                 m_loggers[m_root->m_name] = m_root;
-
                 init();
             }
 
@@ -1064,7 +1090,7 @@ namespace JerryFish
              */
             Logger::ptr getLogger(const std::string& name)
             {
-                //MutexType::Lock lock(m_mutex);
+                MutexType::Lock lock(m_mutex);
                 auto it = m_loggers.find(name);
                 if (it != m_loggers.end()) 
                 {
@@ -1092,7 +1118,7 @@ namespace JerryFish
              */
             std::string toYamlString()
             {
-                //MutexType::Lock lock(m_mutex);
+                MutexType::Lock lock(m_mutex);
                 YAML::Node node;
 
                 for (auto& i : m_loggers) 
@@ -1106,7 +1132,7 @@ namespace JerryFish
             }
         private:
             /// Mutex
-            //MutexType m_mutex;
+            MutexType m_mutex;
             /// 日志器容器
             std::map<std::string, Logger::ptr> m_loggers;
             /// 主日志器
@@ -1118,4 +1144,4 @@ namespace JerryFish
 
 }
 
-#endif
+#endif /* !LOGGER_H */

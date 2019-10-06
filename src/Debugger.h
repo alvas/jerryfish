@@ -7,6 +7,8 @@
 
 //#include "debugger.hpp"
 
+#pragma once
+
 #ifndef DEBUGGER_H
 #define DEBUGGER_H
 
